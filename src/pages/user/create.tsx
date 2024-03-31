@@ -1,4 +1,3 @@
-import { Create } from "@refinedev/chakra-ui";
 import {
   FormControl,
   FormErrorMessage,
@@ -6,6 +5,7 @@ import {
   Input,
   Select,
 } from "@chakra-ui/react";
+import { Create } from "@refinedev/chakra-ui";
 import { useSelect } from "@refinedev/core";
 import { useForm } from "@refinedev/react-hook-form";
 

@@ -3,6 +3,9 @@ import { Column } from "@tanstack/react-table";
 export interface ICategory {
   id: number;
   title: string;
+  content: string;
+  status: "ผู้สร้างทริป" | "ผู้เข้าร่วมทริป" | "Admin";
+  category: { id: number };
 }
 
 export interface IPost {

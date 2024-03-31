@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-import { Edit } from "@refinedev/chakra-ui";
 import {
   FormControl,
   FormErrorMessage,
@@ -7,8 +5,10 @@ import {
   Input,
   Select,
 } from "@chakra-ui/react";
+import { Edit } from "@refinedev/chakra-ui";
 import { useSelect } from "@refinedev/core";
 import { useForm } from "@refinedev/react-hook-form";
+import { useEffect } from "react";
 
 import { IPost } from "../../interfaces";
 

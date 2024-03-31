@@ -1,27 +1,25 @@
+import { ChakraProvider } from "@chakra-ui/react";
+import {
+  AuthPage,
+  ErrorComponent,
+  RefineThemes,
+  ThemedLayoutV2,
+  useNotificationProvider,
+} from "@refinedev/chakra-ui";
 import {
   AuthProvider,
   Authenticated,
-  GitHubBanner,
-  Refine,
+  Refine
 } from "@refinedev/core";
-import {
-  AuthPage,
-  ThemedLayoutV2,
-  ErrorComponent,
-  RefineThemes,
-  useNotificationProvider,
-} from "@refinedev/chakra-ui";
-import { ChakraProvider } from "@chakra-ui/react";
-import dataProvider from "@refinedev/simple-rest";
 import routerProvider, {
-  NavigateToResource,
   CatchAllNavigate,
-  UnsavedChangesNotifier,
   DocumentTitleHandler,
+  NavigateToResource,
+  UnsavedChangesNotifier,
 } from "@refinedev/react-router-v6";
-import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
-import { IconBrandGoogle, IconBrandGithub } from "@tabler/icons";
-
+import dataProvider from "@refinedev/simple-rest";
+import { IconBrandGithub, IconBrandGoogle } from "@tabler/icons";
+import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import { PostCreate, PostEdit, PostList, PostShow } from "./pages";
 
 /**
@@ -144,132 +142,163 @@ const App: React.FC = () => {
     getPermissions: async () => ["admin"],
     getIdentity: async () => ({
       id: 1,
-      name: "Jane Doe",
+      name: "Admin_TripTour",
       avatar:
-        "https://unsplash.com/photos/IWLOvomUmWU/download?force=true&w=640",
+        "./",
     }),
   };
 
   return (
     <BrowserRouter>
-      <GitHubBanner />
+  
       <ChakraProvider theme={RefineThemes.Blue}>
         <Refine
-          dataProvider={dataProvider("https://api.fake-rest.refine.dev")}
+          // dataProvider={dataProvider("https://api.fake-rest.refine.dev")}
+    
           authProvider={authProvider}
           routerProvider={routerProvider}
           notificationProvider={useNotificationProvider()}
           resources={[
             {
               name: "posts",
-              list: "/posts",
-              show: "/posts/show/:id",
-              edit: "/posts/edit/:id",
-              create: "/posts/create",
+              list: PostList,
+              show: PostShow,
+              edit: PostEdit,
+              create: PostCreate,
+              options: { label: "Users" }
             },
+            {
+              name: "trips",
+              list: PostList,
+              // show: TripShow,
+              // edit: TripEdit,
+              // create: TripCreate,
+              options: { label: "Trips" }
+            },
+            // {
+            //   name: "places",
+            //   list: "/places",
+            //   show: "/places/show/:id",
+            //   edit: "/places/edit/:id",
+            //   create: "/places/create",
+            //   options: { label: "Places" } // ตั้งชื่อ label สำหรับ "Places"
+            // },
+            // {
+            //   name: "groupchats",
+            //   list: "/groupchats",
+            //   show: "/groupchats/show/:id",
+            //   edit: "/groupchats/edit/:id",
+            //   create: "/groupchats/create",
+            //   options: { label: "Group Chats" } // ตั้งชื่อ label สำหรับ "Group Chats"
+            // },
+            
+            
           ]}
           options={{
             syncWithLocation: true,
             warnWhenUnsavedChanges: true,
           }}
         >
-          <Routes>
-            <Route
-              element={
-                <Authenticated
-                  key="authenticated-routes"
-                  fallback={<CatchAllNavigate to="/login" />}
-                >
-                  <ThemedLayoutV2>
-                    <Outlet />
-                  </ThemedLayoutV2>
-                </Authenticated>
-              }
-            >
-              <Route index element={<NavigateToResource resource="posts" />} />
+     <Routes>
+   
+  <Route
+    element={
+      <Authenticated
+        key="authenticated-routes"
+        fallback={<CatchAllNavigate to="/login" />}
+      >
+        <ThemedLayoutV2>
+          <Outlet />
+        </ThemedLayoutV2>
+      </Authenticated>
+    }
+  >
+    <Route index element={<NavigateToResource resource="posts" />} />
 
-              <Route path="/posts">
-                <Route index element={<PostList />} />
-                <Route path="create" element={<PostCreate />} />
-                <Route path="edit/:id" element={<PostEdit />} />
-                <Route path="show/:id" element={<PostShow />} />
-              </Route>
-            </Route>
+    <Route path="/posts">
+      <Route index element={<PostList />} />
+      <Route path="create" element={<PostCreate />} />
+      <Route path="edit/:id" element={<PostEdit />} />
+      <Route path="show/:id" element={<PostShow />} />
+    </Route>
+  </Route>
+  <Route
+    element={
+      <Authenticated key="auth-pages" fallback={<Outlet />}>
+        <NavigateToResource resource="posts" />
+      </Authenticated>
+    }
+  >
+    {/* <Route index element={<NavigateToResource resource="trips" />} />
+    <Route path="/trips"></Route> */}
+    <Route
+      path="/login"
+      element={
+        <AuthPage
+          type="login"
+          formProps={{
+            defaultValues: {
+              ...authCredentials,
+            },
+          }}
+          providers={[
+            {
+              name: "google",
+              label: "Sign in with Google",
+              icon: <IconBrandGoogle />,
+            },
+            {
+              name: "github",
+              label: "Sign in with GitHub",
+              icon: <IconBrandGithub />,
+            },
+          ]}
+        />
+      }
+    />
+    <Route
+      path="/register"
+      element={
+        <AuthPage
+          type="register"
+          providers={[
+            {
+              name: "google",
+              label: "Sign in with Google",
+              icon: <IconBrandGoogle />,
+            },
+            {
+              name: "github",
+              label: "Sign in with GitHub",
+              icon: <IconBrandGithub />,
+            },
+          ]}
+        />
+      }
+    />
+    <Route
+      path="/forgot-password"
+      element={<AuthPage type="forgotPassword" />}
+    />
+    <Route
+      path="/update-password"
+      element={<AuthPage type="updatePassword" />}
+    />
+  </Route>
 
-            <Route
-              element={
-                <Authenticated key="auth-pages" fallback={<Outlet />}>
-                  <NavigateToResource resource="posts" />
-                </Authenticated>
-              }
-            >
-              <Route
-                path="/login"
-                element={
-                  <AuthPage
-                    type="login"
-                    formProps={{
-                      defaultValues: {
-                        ...authCredentials,
-                      },
-                    }}
-                    providers={[
-                      {
-                        name: "google",
-                        label: "Sign in with Google",
-                        icon: <IconBrandGoogle />,
-                      },
-                      {
-                        name: "github",
-                        label: "Sign in with GitHub",
-                        icon: <IconBrandGithub />,
-                      },
-                    ]}
-                  />
-                }
-              />
-              <Route
-                path="/register"
-                element={
-                  <AuthPage
-                    type="register"
-                    providers={[
-                      {
-                        name: "google",
-                        label: "Sign in with Google",
-                        icon: <IconBrandGoogle />,
-                      },
-                      {
-                        name: "github",
-                        label: "Sign in with GitHub",
-                        icon: <IconBrandGithub />,
-                      },
-                    ]}
-                  />
-                }
-              />
-              <Route
-                path="/forgot-password"
-                element={<AuthPage type="forgotPassword" />}
-              />
-              <Route
-                path="/update-password"
-                element={<AuthPage type="updatePassword" />}
-              />
-            </Route>
+  <Route
+    element={
+      <Authenticated key="catch-all">
+        <ThemedLayoutV2>
+          <Outlet />
+        </ThemedLayoutV2>
+      </Authenticated>
+    }
+  >
+    <Route path="*" element={<ErrorComponent />} />
+  </Route>
+</Routes>
 
-            <Route
-              element={
-                <Authenticated key="catch-all">
-                  <ThemedLayoutV2>
-                    <Outlet />
-                  </ThemedLayoutV2>
-                </Authenticated>
-              }
-            >
-              <Route path="*" element={<ErrorComponent />} />
-            </Route>
-          </Routes>
           <UnsavedChangesNotifier />
           <DocumentTitleHandler />
         </Refine>
