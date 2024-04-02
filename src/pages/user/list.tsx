@@ -14,6 +14,7 @@ interface IUser {
   lastName: string;
   nickname: string;
   profileImageUrl: string;
+  gender: string;
 }
 
 export const PostList: React.FC = () => {
@@ -27,19 +28,20 @@ export const PostList: React.FC = () => {
   }, []);
 
   const columns = [
-    { accessorKey: "id", header: "UID" },
+    { accessorKey: "id", header: "User_ID" },
     { accessorKey: "firstName", header: "Firstname" },
     { accessorKey: "lastName", header: "Lastname" },
     { accessorKey: "nickname", header: "Nickname" },
+    { accessorKey: "gender", header: "Gender" },
     { accessorKey: "profileImageUrl", header: "Profile Image URL" },
     { accessorKey: "actions", header: "Actions" }
   ];
 
-  const renderActions = (id) => (
+  const renderActions = (id:string) => (
     <>
       <IconButton
         icon={<EditIcon />}
-        // colorScheme="blue"
+        _hover={{ backgroundColor: "#6FB197" }}
         size="sm"
         mr="2"
         onClick={() => console.log("Edit:", id)}
@@ -47,19 +49,20 @@ export const PostList: React.FC = () => {
       />
       <IconButton
         icon={<ViewIcon />}
-        // colorScheme="green"
+        _hover={{ backgroundColor: "#436CF1" }}
         size="sm"
         mr="2"
         onClick={() => console.log("View:", id)}
         aria-label="View"
       />
       <IconButton
-        icon={<DeleteIcon />}
-        colorScheme="red"
-        size="sm"
-        onClick={() => console.log("Delete:", id)}
-        aria-label="Delete"
-      />
+      icon={<DeleteIcon />}
+      _hover={{ backgroundColor: "#E53E3E" }} // ค่าสีแดง HEX ที่สดใส
+      size="sm"
+      onClick={() => console.log("Delete:", id)}
+      aria-label="Delete"
+/>
+
     </>
   );
 

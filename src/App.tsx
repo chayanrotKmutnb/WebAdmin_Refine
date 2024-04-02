@@ -4,6 +4,7 @@ import {
   ErrorComponent,
   RefineThemes,
   ThemedLayoutV2,
+  ThemedTitleV2,
   useNotificationProvider,
 } from "@refinedev/chakra-ui";
 import {
@@ -20,14 +21,17 @@ import routerProvider, {
 import dataProvider from "@refinedev/simple-rest";
 import { IconBrandGithub, IconBrandGoogle } from "@tabler/icons";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
+import { AppIcon } from "./components/app-icon";
 import { PostCreate, PostEdit, PostList, PostShow } from "./pages";
 
+// import { PostTrip } from "./pages/trips";
 /**
  *  mock auth credentials to simulate authentication
  */
+
 const authCredentials = {
-  email: "demo@refine.dev",
-  password: "demodemo",
+  email: "AdminTripTour1@email.com",
+  password: "@dminTripTour123",
 };
 
 const App: React.FC = () => {
@@ -142,18 +146,19 @@ const App: React.FC = () => {
     getPermissions: async () => ["admin"],
     getIdentity: async () => ({
       id: 1,
-      name: "Admin_TripTour",
+      name: "AdminTripTour1",
       avatar:
-        "./",
+        "././Firebase.png",
     }),
   };
 
   return (
     <BrowserRouter>
   
-      <ChakraProvider theme={RefineThemes.Blue}>
+      <ChakraProvider theme={RefineThemes.Orange}>
         <Refine
-          // dataProvider={dataProvider("https://api.fake-rest.refine.dev")}
+        
+          dataProvider={dataProvider("https://api.fake-rest.refine.dev")}
     
           authProvider={authProvider}
           routerProvider={routerProvider}
@@ -199,6 +204,7 @@ const App: React.FC = () => {
             warnWhenUnsavedChanges: true,
           }}
         >
+          
      <Routes>
    
   <Route
@@ -207,7 +213,14 @@ const App: React.FC = () => {
         key="authenticated-routes"
         fallback={<CatchAllNavigate to="/login" />}
       >
-        <ThemedLayoutV2>
+        <ThemedLayoutV2
+         Title={({ collapsed }) => (
+           <ThemedTitleV2
+             collapsed={collapsed}
+             text="TripTour_WebAdmin"
+             icon={<AppIcon />}
+           />
+         )} >
           <Outlet />
         </ThemedLayoutV2>
       </Authenticated>
@@ -301,10 +314,12 @@ const App: React.FC = () => {
 
           <UnsavedChangesNotifier />
           <DocumentTitleHandler />
+          
         </Refine>
       </ChakraProvider>
     </BrowserRouter>
   );
+  
 };
 
 export default App;

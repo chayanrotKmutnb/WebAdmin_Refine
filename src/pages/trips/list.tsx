@@ -1,74 +1,81 @@
-// import {
-//   Table,
-//   TableContainer,
-//   Tbody,
-//   Td,
-//   Th,
-//   Thead,
-//   Tr,
-// } from "@chakra-ui/react";
-// import { useDocumentTitle } from "@refinedev/react-router-v6";
-// import React, { useEffect, useState } from 'react';
-// import { fetchData } from "../../services/firestoreService";
+import { Button, Table, TableContainer, Tbody, Td, Th, Thead, Tr, Link as ChakraLink } from "@chakra-ui/react";
+import { useDocumentTitle } from "@refinedev/react-router-v6";
+import React, { useEffect, useState } from 'react';
+import { fetchData } from "../../services/firestoreService";
 
-// interface IUser {
-//   id: string;
-//   firstName: string; // หรือ `firstName?: string;` ถ้า field นี้ไม่จำเป็นต้องมี
-//   // คุณอาจจะเพิ่ม field อื่นๆ ที่คุณต้องการใช้
-// }
+function truncateString(str, num) {
+  if (!str) return "";
+  return str.length > num ? str.slice(0, num) + '...' : str;
+}
 
-// export const TripsList: React.FC = () => {
-//   useDocumentTitle({ i18nKey: "WebAdmin" });
-//   const [users, setUsers] = useState<IUser[]>([]);
+interface ITrip {
+  id: string;
+  tripName: string;
+  tripStartDate: string;
+  tripEndDate: string;
+  tripLimit: string;
+  tripStatus: string;
+  tripProfileUrl: string;
+  userId: string;
 
-//   useEffect(() => {
-//     fetchData('users').then((data: IUser[]) => {
-//       setUsers(data); // ตั้งค่าข้อมูลผู้ใช้ลงใน state
-//     });
-//   }, []);
+}
 
-//   // ระบุ column และข้อมูลที่คุณต้องการแสดง
-//   const columns = React.useMemo<ColumnDef<IUser>[]>(() => [
-//     {
-//       accessorKey: "firstName", // ตรงกับ key ในข้อมูล
-//       header: () => "firstname",
-//       cell: info => <Td>{info.row.original.firstName}</Td>
-//     },
-//     {
-//       accessorKey: "lastname", // ตรงกับ key ในข้อมูล
-//       header: () => "lastname",
-//       cell: info => <Td>{info.row.original.lastName}</Td>
-//     },
-//     {
-//       accessorKey: "nickname", // ตรงกับ key ในข้อมูล
-//       header: () => "nickname",
-//       cell: info => <Td>{info.row.original.nickname}</Td>
-//     },
-   
-//     // คอลัมน์อื่นๆ ...
-//   ], []);
+export const TripList: React.FC = () => {
+  useDocumentTitle({ i18nKey: "Trips" });
+  const [trips, setTrips] = useState<ITrip[]>([]);
 
-//   return (
-//     <TableContainer>
-//       <Table variant="simple">
-//         <Thead>
-//           <Tr>
-//             {columns.map((column) => (
-//               <Th key={column.accessorKey}>{column.header()}</Th>
-//             ))}
-//           </Tr>
-//         </Thead>
-//         <Tbody>
-//           {users.map((user) => (
-//             <Tr key={user.id}>
-//               {columns.map((column) => {
-//                 const Cell = column.cell;
-//                 return <Cell key={column.accessorKey} row={{ original: user }} />;
-//               })}
-//             </Tr>
-//           ))}
-//         </Tbody>
-//       </Table>
-//     </TableContainer>
-//   );
-// };
+  useEffect(() => {
+    fetchData('trips').then((data: ITrip[]) => {
+      setTrips(data);
+    });
+  }, []);
+
+  const columns = [
+    { accessorKey: "tripName", header: "Trip Name" },
+    { accessorKey: "tripStartDate", header: "Start Date" },
+    { accessorKey: "tripEndDate", header: "End Date" },
+    { accessorKey: "tripLimit", header: "Limit" },
+    { accessorKey: "tripStatus", header: "Status" },
+    { accessorKey: "tripProfileUrl", header: "Profile Image URL" },
+    { accessorKey: "actions", header: "Actions" }
+  ];
+
+  const renderActions = (trip: ITrip) => (
+    <>
+      <ChakraLink href={`/trips/show/${trip.id}`}><Button colorScheme="blue" size="sm" mr="2">Show</Button></ChakraLink>
+      <Button colorScheme="red" size="sm" onClick={() => console.log("Delete:", trip.id)}>Delete</Button>
+    </>
+  );
+
+  return (
+    <TableContainer>
+      <Table variant="simple">
+        <Thead>
+          <Tr>
+            {columns.map(column => <Th key={column.accessorKey}>{column.header}</Th>)}
+          </Tr>
+        </Thead>
+        <Tbody>
+          {trips.map(trip => (
+            <Tr key={trip.id}>
+              {columns.map(column => {
+                if (column.accessorKey === 'tripProfileUrl') {
+                  const truncatedUrl = truncateString(trip[column.accessorKey], 25);
+                  return (
+                    <Td key={column.accessorKey}>
+                      <ChakraLink href={trip[column.accessorKey]} isExternal>{truncatedUrl}</ChakraLink>
+                    </Td>
+                  );
+                } else if (column.accessorKey === 'actions') {
+                  return <Td key={column.accessorKey}>{renderActions(trip)}</Td>;
+                } else {
+                  return <Td key={column.accessorKey}>{trip[column.accessorKey]}</Td>;
+                }
+              })}
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
+    </TableContainer>
+  );
+};
