@@ -15,7 +15,9 @@ import { useDocumentTitle } from "@refinedev/react-router-v6";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import React, { useEffect, useState } from 'react';
 import db from "../../config/firebase-config";
+import firebaseDataProvider from "../../services/firebaseDataProvider";
 import { fetchData } from "../../services/firestoreService";
+
 function truncateString(str: string, num: number) {
   if (!str) return "";
   return str.length > num ? str.slice(0, num) + '...' : str;
@@ -72,15 +74,15 @@ export const PostList: React.FC = () => {
     setSelectedId(id);
     onOpen();
   };
+  
   const confirmDelete = async () => {
     if (selectedId) {
-      // โค้ดสำหรับลบผู้ใช้จากฐานข้อมูล
       console.log("Deleting:", selectedId);
-      // อัปเดตสถานะผู้ใช้หลังจากลบ
-      setUsers(users.filter(user => user.id !== selectedId));
-      onClose(); 
+      await firebaseDataProvider.delete('users', { id: selectedId }); // ลบเอกสารที่มี ID เท่ากับ selectedId ใน Collection 'users'
+      setUsers(users.filter(user => user.id !== selectedId)); // ลบข้อมูลผู้ใช้ที่มี ID เท่ากับ selectedId ออกจาก state
+      onClose(); // ปิด Modal
     }
-  };
+};
 
   const renderActions = (id:string) => (
     <>
