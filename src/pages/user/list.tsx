@@ -1,5 +1,17 @@
 import { DeleteIcon, EditIcon, ViewIcon } from "@chakra-ui/icons";
-import { IconButton, Link, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
+import {
+  Button,
+  IconButton, Link,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Table, TableContainer, Tbody, Td, Th, Thead, Tr,
+  useDisclosure
+} from "@chakra-ui/react";
+
 import { useDocumentTitle } from "@refinedev/react-router-v6";
 import React, { useEffect, useState } from 'react';
 import { fetchData } from "../../services/firestoreService";
@@ -36,6 +48,19 @@ export const PostList: React.FC = () => {
     { accessorKey: "profileImageUrl", header: "Profile Image URL" },
     { accessorKey: "actions", header: "Actions" }
   ];
+  const handleDelete = (id: string) => {
+    setSelectedId(id);
+    onOpen();
+  };
+  const confirmDelete = async () => {
+    if (selectedId) {
+      // โค้ดสำหรับลบผู้ใช้จากฐานข้อมูล
+      console.log("Deleting:", selectedId);
+      // อัปเดตสถานะผู้ใช้หลังจากลบ
+      setUsers(users.filter(user => user.id !== selectedId));
+      onClose(); // ปิด Modal
+    }
+  };
 
   const renderActions = (id:string) => (
     <>
@@ -55,16 +80,21 @@ export const PostList: React.FC = () => {
         onClick={() => console.log("View:", id)}
         aria-label="View"
       />
-      <IconButton
+       <IconButton
       icon={<DeleteIcon />}
-      _hover={{ backgroundColor: "#E53E3E" }} // ค่าสีแดง HEX ที่สดใส
+      _hover={{ backgroundColor: "#E53E3E" }}
       size="sm"
-      onClick={() => console.log("Delete:", id)}
+      onClick={() => handleDelete(id)}
       aria-label="Delete"
-/>
+    />
+  </>
+);
 
-    </>
-  );
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+ 
 
   return (
     <TableContainer>
@@ -95,6 +125,26 @@ export const PostList: React.FC = () => {
           ))}
         </Tbody>
       </Table>
+  
+      {/* ส่วนของ Modal */}
+      <Modal isOpen={isOpen} onClose={onClose}>
+  <ModalOverlay />
+  <ModalContent>
+    <ModalHeader>Confirm Delete</ModalHeader>
+    <ModalBody>
+      Are you sure do you want to delete field this user?
+    </ModalBody>
+    <ModalFooter>
+    <Button backgroundColor="#E53E3E" mr={3} onClick={confirmDelete} color="white">
+  Delete
+</Button>
+
+      <Button variant="ghost" onClick={onClose}>Cancel</Button>
+    </ModalFooter>
+  </ModalContent>
+</Modal>
+
     </TableContainer>
   );
+  
 };
