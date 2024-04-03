@@ -11,14 +11,16 @@ import {
   Table, TableContainer, Tbody, Td, Th, Thead, Tr,
   useDisclosure
 } from "@chakra-ui/react";
-
 import { useDocumentTitle } from "@refinedev/react-router-v6";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import React, { useEffect, useState } from 'react';
+import db from "../../config/firebase-config";
 import { fetchData } from "../../services/firestoreService";
-function truncateString(str, num) {
+function truncateString(str: string, num: number) {
   if (!str) return "";
   return str.length > num ? str.slice(0, num) + '...' : str;
 }
+
 
 interface IUser {
   id: string;
@@ -27,17 +29,33 @@ interface IUser {
   nickname: string;
   profileImageUrl: string;
   gender: string;
+  TripList: string;
+  role: string;
 }
 
 export const PostList: React.FC = () => {
   useDocumentTitle({ i18nKey: "WebAdmin" });
   const [users, setUsers] = useState<IUser[]>([]);
-
+  
+  async function fetchNonAdminUsers() {
+    const usersCollection = collection(db, "users");
+    const q = query(usersCollection, where("role", "!=", "Admin"));
+    const querySnapshot = await getDocs(q);
+    let users: IUser[] = [];
+    querySnapshot.forEach((doc) => {
+      const userData = { id: doc.id, ...doc.data() } as IUser; // เพิ่มการระบุชนิดของข้อมูล
+      users.push(userData);
+    });    
+    return users;
+  }
   useEffect(() => {
     fetchData('users').then((data: IUser[]) => {
-      setUsers(data);
+        const nonAdminUsers = data.filter(user => user.role !== 'Admin');
+        setUsers(nonAdminUsers); // ต้องตรงกับชนิดข้อมูลที่ fetch มา
     });
-  }, []);
+}, []);
+
+
 
   const columns = [
     { accessorKey: "id", header: "User_ID" },
@@ -45,9 +63,11 @@ export const PostList: React.FC = () => {
     { accessorKey: "lastName", header: "Lastname" },
     { accessorKey: "nickname", header: "Nickname" },
     { accessorKey: "gender", header: "Gender" },
+    { accessorKey: "triplist", header: "triplist" },
     { accessorKey: "profileImageUrl", header: "Profile Image URL" },
     { accessorKey: "actions", header: "Actions" }
   ];
+
   const handleDelete = (id: string) => {
     setSelectedId(id);
     onOpen();
@@ -58,7 +78,7 @@ export const PostList: React.FC = () => {
       console.log("Deleting:", selectedId);
       // อัปเดตสถานะผู้ใช้หลังจากลบ
       setUsers(users.filter(user => user.id !== selectedId));
-      onClose(); // ปิด Modal
+      onClose(); 
     }
   };
 
@@ -80,7 +100,7 @@ export const PostList: React.FC = () => {
         onClick={() => console.log("View:", id)}
         aria-label="View"
       />
-       <IconButton
+      <IconButton
       icon={<DeleteIcon />}
       _hover={{ backgroundColor: "#E53E3E" }}
       size="sm"
@@ -118,7 +138,7 @@ export const PostList: React.FC = () => {
                 } else if (column.accessorKey === 'actions') {
                   return <Td key={column.accessorKey}>{renderActions(user.id)}</Td>;
                 } else {
-                  return <Td key={column.accessorKey}>{user[column.accessorKey]}</Td>;
+                  return <Td key={column.accessorKey}>{user[column.accessorKey as keyof IUser]}</Td>;
                 }
               })}
             </Tr>
@@ -132,13 +152,12 @@ export const PostList: React.FC = () => {
   <ModalContent>
     <ModalHeader>Confirm Delete</ModalHeader>
     <ModalBody>
-      Are you sure do you want to delete field this user?
+      Are you sure do you want to delete this user?
     </ModalBody>
     <ModalFooter>
-    <Button backgroundColor="#E53E3E" mr={3} onClick={confirmDelete} color="white">
-  Delete
-</Button>
-
+      <Button backgroundColor="#E53E3E" mr={3} onClick={confirmDelete} color="white">
+      Delete
+      </Button>
       <Button variant="ghost" onClick={onClose}>Cancel</Button>
     </ModalFooter>
   </ModalContent>
