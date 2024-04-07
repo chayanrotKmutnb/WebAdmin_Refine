@@ -21,30 +21,46 @@ export const PostShow: React.FC = () => {
   return (
     <Show isLoading={isLoading}>
       <Heading as="h5" size="sm">
-        Id
+        UserID
       </Heading>
       <Text mt={2}>{record?.id}</Text>
 
       <Heading as="h5" size="sm" mt={4}>
-        Title
+        FirstName
       </Heading>
       <Text mt={2}>{record?.title}</Text>
 
       <Heading as="h5" size="sm" mt={4}>
-        Status
+        LastName
       </Heading>
       <Text mt={2}>{record?.status}</Text>
 
       <Heading as="h5" size="sm" mt={4}>
-        Category
+        NickName
+      </Heading>
+      <Text mt={2}>{record?.status}</Text>
+
+      <Heading as="h5" size="sm" mt={4}>
+        Gender
       </Heading>
       <Text mt={2}>{categoryData?.data?.title}</Text>
 
       <Heading as="h5" size="sm" mt={4}>
-        Content
+        ContactNumber
+      </Heading>
+      <Text mt={2}>{categoryData?.data?.title}</Text>
+
+      <Heading as="h5" size="sm" mt={4}>
+      FriendList
       </Heading>
       <Spacer mt={2} />
       <MarkdownField value={record?.content} />
+
+      <Heading as="h5" size="sm" mt={4}>
+        ProfileImageUrl
+      </Heading>
+      <Text mt={2}>{categoryData?.data?.title}</Text>
+      
     </Show>
   );
 };

@@ -12,16 +12,17 @@ import {
   useDisclosure
 } from "@chakra-ui/react";
 import { useDocumentTitle } from "@refinedev/react-router-v6";
+import { useNavigate } from "react-router-dom"; 
 import { collection, getDocs, query, where } from "firebase/firestore";
 import React, { useEffect, useState } from 'react';
 import db from "../../config/firebase-config";
 import firebaseDataProvider from "../../services/firebaseDataProvider";
 import { fetchData } from "../../services/firestoreService";
-
 function truncateString(str: string, num: number) {
   if (!str) return "";
   return str.length > num ? str.slice(0, num) + '...' : str;
 }
+
 
 
 interface IUser {
@@ -35,10 +36,11 @@ interface IUser {
   role: string;
 }
 
+
 export const PostList: React.FC = () => {
   useDocumentTitle({ i18nKey: "WebAdmin" });
   const [users, setUsers] = useState<IUser[]>([]);
-  
+  const navigate = useNavigate();
   async function fetchNonAdminUsers() {
     const usersCollection = collection(db, "users");
     const q = query(usersCollection, where("role", "!=", "Admin"));
@@ -78,11 +80,19 @@ export const PostList: React.FC = () => {
   const confirmDelete = async () => {
     if (selectedId) {
       console.log("Deleting:", selectedId);
-      await firebaseDataProvider.delete('users', { id: selectedId }); // ลบเอกสารที่มี ID เท่ากับ selectedId ใน Collection 'users'
+      
+      // ลบข้อมูลผู้ใช้ใน Firestore
+      await firebaseDataProvider.delete('users', { id: selectedId });
+  
+      // ลบบัญชีผู้ใช้ใน Firebase Authentication
+      // สมมติว่า `/api/delete-user/` เป็น endpoint ใน backend ที่ลบบัญชีผู้ใช้
+      await fetch(`/api/delete-user/${selectedId}`, { method: 'DELETE' });
+  
       setUsers(users.filter(user => user.id !== selectedId)); // ลบข้อมูลผู้ใช้ที่มี ID เท่ากับ selectedId ออกจาก state
       onClose(); // ปิด Modal
     }
-};
+  };
+  
 
   const renderActions = (id:string) => (
     <>
@@ -94,12 +104,12 @@ export const PostList: React.FC = () => {
         onClick={() => console.log("Edit:", id)}
         aria-label="Edit"
       />
-      <IconButton
+       <IconButton
         icon={<ViewIcon />}
         _hover={{ backgroundColor: "#436CF1" }}
         size="sm"
         mr="2"
-        onClick={() => console.log("View:", id)}
+        onClick={() => navigate(`/posts/show/${id}`)} // เปลี่ยนจาก navigation.show เป็น navigate ของ React Router
         aria-label="View"
       />
       <IconButton
