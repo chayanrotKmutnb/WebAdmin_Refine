@@ -54,3 +54,14 @@ const firebaseDataProvider = {
 
 
 export default firebaseDataProvider;
+// ใน firebaseDataProvider.ts
+// export interface IUser {
+//   id: string;
+//   firstName: string;
+//   lastName: string;
+//   email: string;
+//   role: string;
+//   // คุณสามารถเพิ่มคุณสมบัติอื่นๆ ตามต้องการ
+// }
+
+// คุณสามารถ export interface อื่นๆ ถ้าจำเป็น

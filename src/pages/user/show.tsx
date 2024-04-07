@@ -1,66 +1,68 @@
+import { Box, Heading, Text, Spacer } from "@chakra-ui/react";
 import { MarkdownField, Show } from "@refinedev/chakra-ui";
-import { useOne, useShow } from "@refinedev/core";
+import React, { useEffect, useState } from 'react';
+import { useParams } from "react-router-dom";
+import { fetchData } from "../../services/firestoreService";
 
-import { Heading, Spacer, Text } from "@chakra-ui/react";
-
-import { ICategory, IPost } from "../../interfaces";
+interface IUser {
+  id: string;
+  firstName: string;
+  lastName: string;
+  nickname: string;
+  gender: string;
+  contactNumber: string;
+  friendList: string;
+  profileImageUrl: string;
+}
 
 export const PostShow: React.FC = () => {
-  const { queryResult } = useShow<IPost>();
-  const { data, isLoading } = queryResult;
-  const record = data?.data;
+  const { userId } = useParams<{ userId?: string }>();
+  const [userData, setUserData] = useState<IUser | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const { data: categoryData } = useOne<ICategory>({
-    resource: "categories",
-    id: record?.category.id || "",
-    queryOptions: {
-      enabled: !!record?.category.id,
-    },
-  });
+  useEffect(() => {
+    if (userId) {
+      fetchData().then(data => {
+        const user = data.find(u => u.id === userId) as IUser;
+        setUserData(user);
+        setIsLoading(false);
+      }).catch(error => {
+        console.error('Error fetching user data:', error);
+        setIsLoading(false);
+      });
+    }
+  }, [userId]);
 
   return (
     <Show isLoading={isLoading}>
-      <Heading as="h5" size="sm">
-        UserID
-      </Heading>
-      <Text mt={2}>{record?.id}</Text>
+      {userData && (
+        <>
+          <Heading as="h5" size="sm">UserID</Heading>
+          <Text mt={2}>{userData.id}</Text>
 
-      <Heading as="h5" size="sm" mt={4}>
-        FirstName
-      </Heading>
-      <Text mt={2}>{record?.title}</Text>
+          <Heading as="h5" size="sm" mt={4}>FirstName</Heading>
+          <Text mt={2}>{userData.firstName}</Text>
 
-      <Heading as="h5" size="sm" mt={4}>
-        LastName
-      </Heading>
-      <Text mt={2}>{record?.status}</Text>
+          <Heading as="h5" size="sm" mt={4}>LastName</Heading>
+          <Text mt={2}>{userData.lastName}</Text>
 
-      <Heading as="h5" size="sm" mt={4}>
-        NickName
-      </Heading>
-      <Text mt={2}>{record?.status}</Text>
+          <Heading as="h5" size="sm" mt={4}>NickName</Heading>
+          <Text mt={2}>{userData.nickname}</Text>
 
-      <Heading as="h5" size="sm" mt={4}>
-        Gender
-      </Heading>
-      <Text mt={2}>{categoryData?.data?.title}</Text>
+          <Heading as="h5" size="sm" mt={4}>Gender</Heading>
+          <Text mt={2}>{userData.gender}</Text>
 
-      <Heading as="h5" size="sm" mt={4}>
-        ContactNumber
-      </Heading>
-      <Text mt={2}>{categoryData?.data?.title}</Text>
+          <Heading as="h5" size="sm" mt={4}>ContactNumber</Heading>
+          <Text mt={2}>{userData.contactNumber}</Text>
 
-      <Heading as="h5" size="sm" mt={4}>
-      FriendList
-      </Heading>
-      <Spacer mt={2} />
-      <MarkdownField value={record?.content} />
+          <Heading as="h5" size="sm" mt={4}>FriendList</Heading>
+          <Spacer mt={2} />
+          <MarkdownField value={userData.friendList} />
 
-      <Heading as="h5" size="sm" mt={4}>
-        ProfileImageUrl
-      </Heading>
-      <Text mt={2}>{categoryData?.data?.title}</Text>
-      
+          <Heading as="h5" size="sm" mt={4}>ProfileImageUrl</Heading>
+          <Text mt={2}>{userData.profileImageUrl}</Text>
+        </>
+      )}
     </Show>
   );
 };

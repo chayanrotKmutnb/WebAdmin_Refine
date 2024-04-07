@@ -6,9 +6,8 @@ import db from '../config/firebase-config';
 
 export const fetchData = async () => {
   const querySnapshot = await getDocs(collection(db, "users"));
-  return querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+  return querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
 };
-
 
 
 // Create

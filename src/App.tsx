@@ -232,7 +232,7 @@ const App: React.FC = () => {
       <Route index element={<PostList />} />
       <Route path="create" element={<PostCreate />} />
       <Route path="edit/:id" element={<PostEdit />} />
-      <Route path="show/:id" element={<PostShow />} />
+      <Route path="/posts/show/:userId" element={<PostShow />} />
     </Route>
   </Route>
   <Route

@@ -12,9 +12,9 @@ import {
   useDisclosure
 } from "@chakra-ui/react";
 import { useDocumentTitle } from "@refinedev/react-router-v6";
-import { useNavigate } from "react-router-dom"; 
 import { collection, getDocs, query, where } from "firebase/firestore";
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import db from "../../config/firebase-config";
 import firebaseDataProvider from "../../services/firebaseDataProvider";
 import { fetchData } from "../../services/firestoreService";
@@ -22,8 +22,6 @@ function truncateString(str: string, num: number) {
   if (!str) return "";
   return str.length > num ? str.slice(0, num) + '...' : str;
 }
-
-
 
 interface IUser {
   id: string;
@@ -36,11 +34,11 @@ interface IUser {
   role: string;
 }
 
-
 export const PostList: React.FC = () => {
   useDocumentTitle({ i18nKey: "WebAdmin" });
   const [users, setUsers] = useState<IUser[]>([]);
   const navigate = useNavigate();
+  
   async function fetchNonAdminUsers() {
     const usersCollection = collection(db, "users");
     const q = query(usersCollection, where("role", "!=", "Admin"));
@@ -109,7 +107,8 @@ export const PostList: React.FC = () => {
         _hover={{ backgroundColor: "#436CF1" }}
         size="sm"
         mr="2"
-        onClick={() => navigate(`/posts/show/${id}`)} // เปลี่ยนจาก navigation.show เป็น navigate ของ React Router
+        onClick={() => navigate(`/posts/show/${id}`)}
+ // เปลี่ยนจาก navigation.show เป็น navigate ของ React Router
         aria-label="View"
       />
       <IconButton
