@@ -1,5 +1,5 @@
-import { Heading, Spacer, Text } from "@chakra-ui/react";
-import { MarkdownField, Show } from "@refinedev/chakra-ui";
+import { Box, Heading, Image, Text } from "@chakra-ui/react";
+import { Show } from "@refinedev/chakra-ui";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { fetchData } from "../../services/firestoreService";
@@ -12,9 +12,8 @@ interface IUser {
   contactNumber: string;
   friendList: string;
   profileImageUrl: string;
+  triplist: string;
 }
-
-
 
 export const PostShow: React.FC = () => {
   const { userId } = useParams<{ userId?: string }>();
@@ -24,7 +23,7 @@ export const PostShow: React.FC = () => {
   const handleEdit = () => {
     navigate(`/posts/edit/${userId}`);
   };
-  
+
   useEffect(() => {
     if (userId) {
       fetchData()
@@ -44,6 +43,24 @@ export const PostShow: React.FC = () => {
     <Show isLoading={isLoading}>
       {userData && (
         <>
+          <Box mb={4}>
+            {" "}
+            <Heading as="h5" size="sm" mt={4}>
+              ProfileImage
+            </Heading>
+            {userData.profileImageUrl ? (
+              <Image
+                mt={2}
+                src={userData.profileImageUrl}
+                alt="Profile Image"
+                boxSize="200px" // หรือขนาดที่คุณต้องการ
+                objectFit="cover"
+              />
+            ) : (
+              <Text mt={2}>ไม่มีรูปภาพ</Text>
+            )}
+          </Box>
+
           <Heading as="h5" size="sm">
             UserID
           </Heading>
@@ -77,13 +94,18 @@ export const PostShow: React.FC = () => {
           <Heading as="h5" size="sm" mt={4}>
             FriendList
           </Heading>
-          <Spacer mt={2} />
-          <MarkdownField value={userData.friendList} />
+          <Text mt={2}>
+            {userData.friendList
+              ? typeof userData.friendList === "string"
+                ? userData.friendList.split(", ").join(", ")
+                : "ไม่มีรายชื่อเพื่อน"
+              : "ไม่มีรายชื่อเพื่อน"}
+          </Text>
 
           <Heading as="h5" size="sm" mt={4}>
-            ProfileImageUrl
+            TripList
           </Heading>
-          <Text mt={2}>{userData.profileImageUrl}</Text>
+          <Text mt={2}>{userData.triplist}</Text>
         </>
       )}
     </Show>
