@@ -1,5 +1,13 @@
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
-import db from '../config/firebase-config';
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
+import db from "../config/firebase-config";
 
 interface IUser {
   id: string;
@@ -18,9 +26,9 @@ interface IResourceData {
 const firebaseDataProvider = {
   getList: async (resource: string, params: any) => {
     const querySnapshot = await getDocs(collection(db, resource));
-    return { 
-      data: querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id })), 
-      total: querySnapshot.size 
+    return {
+      data: querySnapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })),
+      total: querySnapshot.size,
     };
   },
 
@@ -30,7 +38,7 @@ const firebaseDataProvider = {
     if (docSnap.exists()) {
       return { data: { ...docSnap.data(), id: docSnap.id } };
     } else {
-      throw new Error('Document not found');
+      throw new Error("Document not found");
     }
   },
 
@@ -39,7 +47,10 @@ const firebaseDataProvider = {
     return { data: { ...params.data, id: docRef.id } };
   },
 
-  update: async (resource: string, params: { id: string; data: IResourceData }) => {
+  update: async (
+    resource: string,
+    params: { id: string; data: IResourceData }
+  ) => {
     const docRef = doc(db, resource, params.id);
     await updateDoc(docRef, params.data);
     return { data: { ...params.data, id: params.id } };
@@ -51,7 +62,6 @@ const firebaseDataProvider = {
     return { data: { id: params.id } };
   },
 };
-
 
 export default firebaseDataProvider;
 // ใน firebaseDataProvider.ts
