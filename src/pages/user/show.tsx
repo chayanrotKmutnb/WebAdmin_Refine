@@ -1,8 +1,21 @@
-import { Heading, Spacer, Text } from "@chakra-ui/react";
-import { MarkdownField, Show } from "@refinedev/chakra-ui";
-import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { fetchData } from "../../services/firestoreService";
+import {
+  Box,
+  Center,
+  Image,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Text,
+  Tr,
+  VStack,
+  Heading,
+} from '@chakra-ui/react';
+import { Show } from '@refinedev/chakra-ui';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { fetchData } from '../../services/firestoreService';
+
 interface IUser {
   id: string;
   firstName: string;
@@ -12,19 +25,14 @@ interface IUser {
   contactNumber: string;
   friendList: string;
   profileImageUrl: string;
+  triplist: string;
 }
-
-
 
 export const PostShow: React.FC = () => {
   const { userId } = useParams<{ userId?: string }>();
   const [userData, setUserData] = useState<IUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
-  const handleEdit = () => {
-    navigate(`/posts/edit/${userId}`);
-  };
-  
+
   useEffect(() => {
     if (userId) {
       fetchData()
@@ -43,48 +51,49 @@ export const PostShow: React.FC = () => {
   return (
     <Show isLoading={isLoading}>
       {userData && (
-        <>
-          <Heading as="h5" size="sm">
-            UserID
-          </Heading>
-          <Text mt={2}>{userData.id}</Text>
-
-          <Heading as="h5" size="sm" mt={4}>
-            FirstName
-          </Heading>
-          <Text mt={2}>{userData.firstName}</Text>
-
-          <Heading as="h5" size="sm" mt={4}>
-            LastName
-          </Heading>
-          <Text mt={2}>{userData.lastName}</Text>
-
-          <Heading as="h5" size="sm" mt={4}>
-            NickName
-          </Heading>
-          <Text mt={2}>{userData.nickname}</Text>
-
-          <Heading as="h5" size="sm" mt={4}>
-            Gender
-          </Heading>
-          <Text mt={2}>{userData.gender}</Text>
-
-          <Heading as="h5" size="sm" mt={4}>
-            ContactNumber
-          </Heading>
-          <Text mt={2}>{userData.contactNumber}</Text>
-
-          <Heading as="h5" size="sm" mt={4}>
-            FriendList
-          </Heading>
-          <Spacer mt={2} />
-          <MarkdownField value={userData.friendList} />
-
-          <Heading as="h5" size="sm" mt={4}>
-            ProfileImageUrl
-          </Heading>
-          <Text mt={2}>{userData.profileImageUrl}</Text>
-        </>
+        <VStack spacing={4} align="stretch">
+          <Center>
+            <Image
+              boxSize="250px"
+              borderRadius="full"
+              src={userData.profileImageUrl}
+              alt="Profile Image"
+            />
+          </Center>
+          <Center>
+            <Heading as="h3" size="lg">{userData.nickname}</Heading>
+          </Center>
+          <TableContainer>
+            <Table variant="simple">
+              <Tbody>
+                <Tr>
+                  <Td fontWeight="bold">UserID</Td>
+                  <Td>{userData.id}</Td>
+                </Tr>
+                <Tr>
+                  <Td fontWeight="bold">FirstName</Td>
+                  <Td>{userData.firstName}</Td>
+                </Tr>
+                <Tr>
+                  <Td fontWeight="bold">LastName</Td>
+                  <Td>{userData.lastName}</Td>
+                </Tr>
+                <Tr>
+                  <Td fontWeight="bold">ContactNumber</Td>
+                  <Td>{userData.contactNumber}</Td>
+                </Tr>
+                <Tr>
+                  <Td fontWeight="bold">TripList</Td>
+                  <Td>{userData.triplist || '0'}</Td>
+                </Tr>
+                <Tr>
+                  <Td fontWeight="bold">FriendList</Td>
+                  <Td>{userData.friendList || '0'}</Td>
+                </Tr>
+              </Tbody>
+            </Table>
+          </TableContainer>
+        </VStack>
       )}
     </Show>
   );

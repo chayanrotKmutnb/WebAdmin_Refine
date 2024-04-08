@@ -1,80 +1,75 @@
 import {
   FormControl,
+  FormErrorIcon,
   FormErrorMessage,
   FormLabel,
   Input,
   Select,
 } from "@chakra-ui/react";
 import { Edit } from "@refinedev/chakra-ui";
-import { useSelect } from "@refinedev/core";
 import { useForm } from "@refinedev/react-hook-form";
-import { useEffect } from "react";
-
-import { IPost } from "../../interfaces";
 
 export const PostEdit = () => {
-  const {
-    refineCore: { formLoading, queryResult },
-    saveButtonProps,
-    register,
-    formState: { errors },
-    resetField,
-  } = useForm<IPost>();
+  const { register, handleSubmit, formState: { errors } } = useForm<IUser>();
 
-  const { options } = useSelect({
-    resource: "categories",
-
-    defaultValue: queryResult?.data?.data.category.id,
-    queryOptions: { enabled: !!queryResult?.data?.data.category.id },
-  });
-
-  useEffect(() => {
-    resetField("category.id");
-  }, [options]);
+  const onSubmit = (data: IUser) => console.log(data);
 
   return (
-    <Edit isLoading={formLoading} saveButtonProps={saveButtonProps}>
-      <FormControl mb="3" isInvalid={!!errors?.title}>
-        <FormLabel>Title</FormLabel>
-        <Input
-          id="title"
-          type="text"
-          {...register("title", { required: "Title is required" })}
-        />
-        <FormErrorMessage>{`${errors.title?.message}`}</FormErrorMessage>
-      </FormControl>
-      <FormControl mb="3" isInvalid={!!errors?.status}>
-        <FormLabel>Status</FormLabel>
-        <Select
-          id="content"
-          placeholder="Select Post Status"
-          {...register("status", {
-            required: "Status is required",
-          })}
-        >
-          <option>published</option>
-          <option>draft</option>
-          <option>rejected</option>
-        </Select>
-        <FormErrorMessage>{`${errors.status?.message}`}</FormErrorMessage>
-      </FormControl>
-      <FormControl mb="3" isInvalid={!!errors?.categoryId}>
-        <FormLabel>Category</FormLabel>
-        <Select
-          id="ca"
-          placeholder="Select Category"
-          {...register("category.id", {
-            required: true,
-          })}
-        >
-          {options?.map((option) => (
-            <option value={option.value} key={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </Select>
-        <FormErrorMessage>{`${errors.categoryId?.message}`}</FormErrorMessage>
-      </FormControl>
+    <Edit>
+      {/* ใช้ `handleSubmit` กับ `form` ใน `Edit` component */}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <FormControl isInvalid={!!errors.firstName}>
+          <FormLabel htmlFor="firstName">First Name</FormLabel>
+          <Input id="firstName" type="text" {...register("firstName")} />
+          <FormErrorMessage>
+            {errors.firstName?.message}
+          </FormErrorMessage>
+        </FormControl>
+
+        <FormControl isInvalid={!!errors.lastName}>
+          <FormLabel htmlFor="lastName">Last Name</FormLabel>
+          <Input id="lastName" type="text" {...register("lastName")} />
+          <FormErrorMessage>
+            {errors.lastName?.message}
+          </FormErrorMessage>
+        </FormControl>
+
+        <FormControl isInvalid={!!errors.nickName}>
+          <FormLabel htmlFor="nickName">Nick Name</FormLabel>
+          <Input id="nickName" type="text" {...register("nickName")} />
+          <FormErrorMessage>
+            {errors.nickName?.message}
+          </FormErrorMessage>
+        </FormControl>
+
+        <FormControl isInvalid={!!errors.gender}>
+          <FormLabel htmlFor="gender">Gender</FormLabel>
+          <Select id="gender" {...register("gender")}>
+            <option value="male">ชาย</option>
+            <option value="female">หญิง</option>
+            <option value="other">อื่นๆ</option>
+          </Select>
+          <FormErrorMessage>
+            {errors.gender?.message}
+          </FormErrorMessage>
+        </FormControl>
+
+        <FormControl isInvalid={!!errors.contactNumber}>
+          <FormLabel htmlFor="contactNumber">Contact Number</FormLabel>
+          <Input id="contactNumber" type="text" {...register("contactNumber")} />
+          <FormErrorMessage>
+            {errors.contactNumber?.message}
+          </FormErrorMessage>
+        </FormControl>
+
+        <FormControl isInvalid={!!errors.profileImageUrl}>
+          <FormLabel htmlFor="profileImageUrl">Profile Image URL</FormLabel>
+          <Input id="profileImageUrl" type="text" {...register("profileImageUrl")} />
+          <FormErrorIcon>
+            {errors.profileImageUrl?.message}
+            </FormErrorIcon>
+        </FormControl>
+      </form>
     </Edit>
   );
 };
