@@ -1,62 +1,78 @@
-// PostEdit.tsx
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
-import { Button, FormControl, FormLabel, Input, FormErrorMessage } from '@chakra-ui/react';
-import { updateUser } from '../../services/firestoreService';
-import { doc, getDoc, updateDoc } from 'firebase/firestore'; // เพิ่ม import updateDoc ด้วย
-
-interface IUser {
-  firstName: string;
-  lastName: string;
-  nickname: string;
-  gender: string;
-  contactNumber: string;
-}
+import {
+  FormControl,
+  FormLabel,
+  Input,
+  Select,
+  FormErrorMessage,
+} from "@chakra-ui/react";
+import { Edit } from "@refinedev/chakra-ui";
+import { useForm } from "@refinedev/react-hook-form";
 
 export const PostEdit = () => {
-  const { firstName } = useParams<{ firstName?: string }>();
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm<IUser>();
+  const { register, handleSubmit, formState: { errors } } = useForm<IUser>();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (firstName) {
-        const docRef = doc(db, "users", firstName);
-        const docSnap = await getDoc(docRef);
-        const userData = docSnap.data() as IUser;
-
-        setValue('firstName', userData.firstName); // ตั้งค่าค่าเริ่มต้นสำหรับฟิลด์ "ชื่อจริง"
-      }
-    };
-
-    fetchData();
-  }, [firstName, setValue]);
-
-  const onSubmit = async (data: IUser) => {
-    if (firstName) {
-      // ส่งข้อมูลผู้ใช้ที่เปลี่ยนแปลงไปยังฟังก์ชัน updateUser เพื่ออัปเดตข้อมูลใน Firestore
-      await updateUser(firstName, data)
-        .then(() => {
-          console.log("User data updated successfully");
-        })
-        .catch((error) => {
-          console.error("Error updating user data", error);
-        });
-    }
-  };
-  
+  const onSubmit = data => console.log(data);
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <FormControl isInvalid={!!errors.firstName}>
-        <FormLabel htmlFor="firstName">ชื่อจริง</FormLabel>
-        <Input id="firstName" type="text" {...register("firstName")} />
-        <FormErrorMessage>{errors.firstName && errors.firstName.message}</FormErrorMessage>
-      </FormControl>
+    <Edit>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <FormControl isInvalid={!!errors.firstName}>
+          <FormLabel htmlFor="firstName">First Name</FormLabel>
+          <Input id="firstName" type="text" {...register("firstName")} />
+          <FormErrorMessage>
+            {errors.firstName && errors.firstName.message}
+          </FormErrorMessage>
+        </FormControl>
 
-      <Button mt={4} colorScheme="teal" type="submit">
-        อัปเดต
-      </Button>
-    </form>
+        <FormControl isInvalid={!!errors.lastName}>
+          <FormLabel htmlFor="lastName">Last Name</FormLabel>
+          <Input id="lastName" type="text" {...register("lastName")} />
+          <FormErrorMessage>
+            {errors.lastName && errors.lastName.message}
+          </FormErrorMessage>
+        </FormControl>
+
+        {/* เพิ่มฟิลด์ Nick Name */}
+        <FormControl isInvalid={!!errors.nickName}>
+          <FormLabel htmlFor="nickName">Nick Name</FormLabel>
+          <Input id="nickName" type="text" {...register("nickName")} />
+          <FormErrorMessage>
+            {errors.nickName && errors.nickName.message}
+          </FormErrorMessage>
+        </FormControl>
+
+        {/* เพิ่มฟิลด์ Gender */}
+        <FormControl isInvalid={!!errors.gender}>
+          <FormLabel htmlFor="gender">Gender</FormLabel>
+          <Select id="gender" {...register("gender")}>
+            <option value="male">ชาย</option>
+            <option value="female">หญิง</option>
+            <option value="other">อื่นๆ</option>
+          </Select>
+          <FormErrorMessage>
+            {errors.gender && errors.gender.message}
+          </FormErrorMessage>
+        </FormControl>
+
+        {/* เพิ่มฟิลด์ Contact Number */}
+        <FormControl isInvalid={!!errors.contactNumber}>
+          <FormLabel htmlFor="contactNumber">Contact Number</FormLabel>
+          <Input id="contactNumber" type="text" {...register("contactNumber")} />
+          <FormErrorMessage>
+            {errors.contactNumber && errors.contactNumber.message}
+          </FormErrorMessage>
+        </FormControl>
+
+        {/* เพิ่มฟิลด์ Profile Image URL */}
+        <FormControl isInvalid={!!errors.profileImageUrl}>
+          <FormLabel htmlFor="profileImageUrl">Profile Image URL</FormLabel>
+          <Input id="profileImageUrl" type="text" {...register("profileImageUrl")} />
+          <FormErrorMessage>
+            {errors.profileImageUrl && errors.profileImageUrl.message}
+          </FormErrorMessage>
+        </FormControl>
+
+      </form>
+    </Edit>
   );
 };
