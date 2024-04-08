@@ -9,7 +9,10 @@ export const fetchData = async () => {
   return querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
 };
 
-
+export const updateUser = async (userId: string, userData: any) => {
+  const userRef = doc(db, 'users', userId);
+  await updateDoc(userRef, userData);
+};
 // Create
 export const addData = async (collectionName: string, data: any): Promise<void> => {
   await addDoc(collection(db, collectionName), data);

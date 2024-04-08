@@ -1,10 +1,10 @@
 // PostEdit.tsx
-import React, { useEffect } from 'react';
+import { Button, FormControl, FormErrorMessage, FormLabel, Input } from '@chakra-ui/react';
+import { doc, getDoc } from 'firebase/firestore'; // เพิ่ม import updateDoc ด้วย
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
-import { Button, FormControl, FormLabel, Input, FormErrorMessage } from '@chakra-ui/react';
 import { updateUser } from '../../services/firestoreService';
-import { doc, getDoc, updateDoc } from 'firebase/firestore'; // เพิ่ม import updateDoc ด้วย
 
 interface IUser {
   firstName: string;
@@ -14,7 +14,7 @@ interface IUser {
   contactNumber: string;
 }
 
-export const PostEdit = () => {
+export const TripEdit = () => {
   const { firstName } = useParams<{ firstName?: string }>();
   const { register, handleSubmit, setValue, formState: { errors } } = useForm<IUser>();
 

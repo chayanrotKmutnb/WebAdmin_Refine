@@ -1,5 +1,4 @@
+
 export * from "./list";
-export { PostList } from './../user/list';
-
-
+export * from "./show";
 
